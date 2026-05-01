@@ -1,0 +1,53 @@
+# Secrets — NEVER commit
+.env
+.env.*
+!.env.example
+
+# Claude
+.claude/
+
+# Runtime state and logs
+state/
+logs/
+*.sqlite
+*.sqlite-journal
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual envs
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Backtest artifacts
+backtest_output/
+*.html
+!docs/**/*.html
+
+# Continuation priors are runtime-produced; keep tracked snapshots only when
+# explicitly added by the operator after a Phase 3 backtest pass.
+state/continuation_priors.json

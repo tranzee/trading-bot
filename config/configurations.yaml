@@ -1,0 +1,58 @@
+# Named bot configurations. See config/bot_configuration.py for the schema.
+#
+# Defaults applied per-config when fields are omitted:
+#   htf_window_seconds       = 12 * window_seconds
+#   freshness_half_life_min  = 6  * (window_seconds / 60)
+#   dual_scan_early_warning  = 0.6
+#   dual_scan_confirmation   = 1.0
+#
+# IMPORTANT: state files are scoped per configuration name:
+#   state/priors_{name}.json
+#   state/early_bird_{name}.json
+#   state/guard_state_{name}.json
+#
+# The runtime gate refuses to enter live mode for any configuration whose
+# priors file is missing OR older than 60 days OR aggregate < 0.54 OR
+# bootstrap 5th-pct < 0.51 OR sample size < 200.
+
+configurations:
+
+  btc_5m:
+    asset: BTC
+    window_seconds: 300
+    polymarket_slug_pattern: "btc-updown-5m-{slot_end_ts}"
+    binance_stream_pattern: "/stream?streams=btcusdt@trade/btcusdt@kline_5m"
+    coinbase_product: "BTC-USD"
+    binance_vision_pattern: "BTCUSDT-5m"
+    # htf_window_seconds defaults to 3600 (12 * 300)
+    # freshness_half_life_min defaults to 30 (6 * 5)
+
+  btc_15m:
+    asset: BTC
+    window_seconds: 900
+    polymarket_slug_pattern: "btc-updown-15m-{slot_end_ts}"
+    binance_stream_pattern: "/stream?streams=btcusdt@trade/btcusdt@kline_15m"
+    coinbase_product: "BTC-USD"
+    binance_vision_pattern: "BTCUSDT-15m"
+    # htf_window_seconds defaults to 10800 (12 * 900 = 3h)
+    # freshness_half_life_min defaults to 90 (6 * 15)
+
+  btc_30m:
+    asset: BTC
+    window_seconds: 1800
+    polymarket_slug_pattern: "btc-updown-30m-{slot_end_ts}"
+    binance_stream_pattern: "/stream?streams=btcusdt@trade/btcusdt@kline_30m"
+    coinbase_product: "BTC-USD"
+    binance_vision_pattern: "BTCUSDT-30m"
+    # htf_window_seconds defaults to 21600 (12 * 1800 = 6h)
+    # freshness_half_life_min defaults to 180 (6 * 30)
+
+  btc_1h:
+    asset: BTC
+    window_seconds: 3600
+    polymarket_slug_pattern: "btc-updown-1h-{slot_end_ts}"
+    binance_stream_pattern: "/stream?streams=btcusdt@trade/btcusdt@kline_1h"
+    coinbase_product: "BTC-USD"
+    binance_vision_pattern: "BTCUSDT-1h"
+    # htf_window_seconds defaults to 43200 (12 * 3600 = 12h)
+    # freshness_half_life_min defaults to 360 (6 * 60)

@@ -1,0 +1,94 @@
+name: ci
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dev tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff==0.3.4 black==24.3.0
+
+      - name: Ruff
+        run: ruff check src/ config/ tests/
+
+      - name: Ruff format check
+        run: ruff format --check src/ config/ tests/
+
+      - name: Black
+        run: black --check src/ config/ tests/
+
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          # Skip the optional V2 client at lint time — it may not be on PyPI yet.
+          pip install pydantic>=2.5 pydantic-settings>=2.1 typer>=0.9 types-PyYAML mypy==1.9.0
+
+      - name: Mypy (strict, on stable layers only)
+        run: |
+          mypy --strict --ignore-missing-imports \
+               src/polybot/__init__.py \
+               src/polybot/cli.py \
+               config/
+
+  test:
+    name: tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          # In CI, install only the deps needed for Phase 0 unit tests; the
+          # CLOB V2 client is exercised by integration tests in later phases.
+          pip install \
+            pydantic>=2.5 pydantic-settings>=2.1 PyYAML>=6.0 \
+            typer>=0.9 loguru>=0.7 \
+            pytest>=7.4 pytest-asyncio>=0.23 hypothesis>=6.92 freezegun>=1.4
+          pip install -e . --no-deps
+
+      - name: Pytest (unit + property)
+        env:
+          POLYMARKET_PRIVATE_KEY: 0x1111111111111111111111111111111111111111111111111111111111111111
+          POLYMARKET_FUNDER_ADDRESS: 0xabababababababababababababababababababab
+        run: pytest tests/unit tests/property -q

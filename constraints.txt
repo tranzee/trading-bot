@@ -1,0 +1,56 @@
+# ============================================================================
+# constraints.txt — pin transitive deps for py-clob-client-v2.
+#
+# Polymarket shipped V2 in April 2026. The transitive dep graph is not yet
+# seasoned, and supply-chain attacks tend to land on freshly-popular packages.
+# We pin both the SDK itself and its known transitives to defended versions.
+#
+# Usage:
+#     pip install -e ".[dev]" -c constraints.txt
+#
+# Refresh procedure (operator-only, NOT automated):
+#   1. Read py-clob-client-v2 release notes.
+#   2. Re-pin in a branch.
+#   3. Run full test suite + smoke + 24h paper run BEFORE merging.
+# ============================================================================
+
+# === Polymarket SDK and direct transitives ===
+py-clob-client-v2==1.0.0
+web3==6.15.1
+eth-account==0.10.0
+eth-utils==2.3.1
+eth-typing==3.5.2
+eth-abi==4.2.1
+eth-keys==0.4.0
+hexbytes==0.3.1
+pycryptodome==3.19.0
+
+# === Networking / async ===
+websockets==12.0
+aiohttp==3.9.3
+httpx==0.27.0
+yarl==1.9.4
+multidict==6.0.5
+
+# === Data ===
+numpy==1.26.4
+pandas==2.2.0
+polars==0.20.13
+scipy==1.12.0
+ccxt==4.2.50
+
+# === Validation / config ===
+pydantic==2.6.1
+pydantic-settings==2.1.0
+PyYAML==6.0.1
+
+# === Persistence / logging / UI ===
+sqlalchemy==2.0.25
+loguru==0.7.2
+rich==13.7.0
+plotly==5.18.0
+
+# === Infra ===
+python-dotenv==1.0.1
+typer==0.9.0
+click==8.1.7
